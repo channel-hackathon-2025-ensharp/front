@@ -9,7 +9,7 @@ export default function StaffPanel({
   staffList,
   substitutes,
 }) {
-  const [activeTab, setActiveTab] = useState("confirmed");
+  const [activeTab, setActiveTab] = useState("available");
   const { isOpen: isModalOpen, open: openModal, close: closeModal, data: selectedStaff } = useModal();
 
 
@@ -21,7 +21,9 @@ export default function StaffPanel({
   };
 
   const handleApprove = (person) => {
-    alert(`${person.name}님이 대체 근무자로 승인되었습니다.`);
+    if (typeof onApprove === "function") {
+      onApprove(person);
+    }
     closeModal();
   };
 

@@ -68,15 +68,14 @@ export default function AdminHome() {
         {/* 플로팅 채널톡 버튼 */}
 
         <button
-          className="fixed bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl ring-1 ring-black/10 bg-white flex items-center justify-center hover:scale-105 transition-transform z-50"
+          className="fixed bottom-8 right-8 w-16 h-16 rounded-full overflow-hidden shadow-2xl bg-white flex items-center justify-center hover:scale-105 transition-transform z-50"
           aria-label="채널톡 열기"
         >
           <Image
             src={channeltalkLogo}
             alt="채널톡 로고"
-            width={28}
-            height={28}
-            className="object-contain"
+            fill
+            className="object-cover w-full h-full"
             priority
           />
         </button>

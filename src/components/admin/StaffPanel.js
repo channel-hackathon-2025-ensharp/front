@@ -86,7 +86,7 @@ export default function StaffPanel({
                   ></div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">
-                      {person.type === "new" ? "신규 상담" : "기존 상담"}
+                      {person.type === "new" ? "변동 있음" : "변동 없음"}
                     </span>
                   </div>
                 </div>

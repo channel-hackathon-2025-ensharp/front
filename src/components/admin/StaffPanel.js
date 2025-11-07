@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ConfirmModal from "../common/ConfirmModal";
 
 export default function StaffPanel({
   currentStaff,
@@ -7,6 +8,18 @@ export default function StaffPanel({
   staffList,
 }) {
   const [activeTab, setActiveTab] = useState("confirmed");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+
+  const handleChangeClick = (person) => {
+    setSelectedStaff(person);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirm = () => {
+    console.log("직원 제외 확인:", selectedStaff);
+    // 여기에 실제 제외 로직 추가
+  };
 
   return (
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
@@ -80,7 +93,10 @@ export default function StaffPanel({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-medium">{person.name}</span>
-                  <button className="text-sm text-gray-400 hover:text-gray-600 underline">
+                  <button
+                    onClick={() => handleChangeClick(person)}
+                    className="text-sm text-gray-400 hover:text-gray-600 underline"
+                  >
                     변경하기
                   </button>
                 </div>
@@ -88,6 +104,27 @@ export default function StaffPanel({
             ))}
         </div>
       </div>
+
+      {/* ConfirmModal */}
+      {selectedStaff && (
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+          title={`${selectedStaff.name} 직원을\n다음 근무 일정에서 제외합니다.`}
+          content={[
+            {
+              label: "일시",
+              value: `2025.11.08. (토)\n${timeSlot}`,
+            },
+            {
+              label: "직무",
+              value: selectedStaff.type === "new" ? "신규 상담" : "기존 상담",
+            },
+          ]}
+          footer="확인 시 해당 직원에게 알림이 발송됩니다."
+        />
+      )}
     </div>
   );
 }

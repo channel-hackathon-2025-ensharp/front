@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import CalendarModal from "../common/CalendarModal";
+import { formatDateWithDay } from "../../utils/date";
+import useModal from "../../hooks/useModal";
 
 export default function DateCard({ date, dayOfWeek, isBusinessDay = true, onDateChange }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleDateSelect = (newDate) => {
@@ -18,7 +20,7 @@ export default function DateCard({ date, dayOfWeek, isBusinessDay = true, onDate
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 relative">
         {/* 우측 상단 화살표 아이콘 */}
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModal}
           className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
         >
           <ChevronRightIcon className="w-5 h-5" />
@@ -27,7 +29,7 @@ export default function DateCard({ date, dayOfWeek, isBusinessDay = true, onDate
         <div className="text-sm text-gray-500 mb-2">오늘</div>
         <div className="flex items-center justify-between pr-8">
           <div className="text-gray-600">
-            {date} ({dayOfWeek})
+            {formatDateWithDay(selectedDate)}
           </div>
           <div className="text-3xl font-bold text-blue-600">
             {isBusinessDay ? "영업일" : "휴무일"}
@@ -37,17 +39,17 @@ export default function DateCard({ date, dayOfWeek, isBusinessDay = true, onDate
 
       <CalendarModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
         highlightedDates={[
-          new Date(2025, 10, 1), // 11월 1일 (월은 0부터 시작)
+          new Date(2025, 10, 1),
           new Date(2025, 10, 3),
           new Date(2025, 10, 4),
           new Date(2025, 10, 5),
           new Date(2025, 10, 6),
           new Date(2025, 10, 7),
-          new Date(2025, 10, 8), // 11월 8일 추가
+          new Date(2025, 10, 8),
           new Date(2025, 10, 10),
           new Date(2025, 10, 11),
           new Date(2025, 10, 12),

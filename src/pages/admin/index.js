@@ -5,21 +5,21 @@ import StaffPanel from "../../components/admin/StaffPanel";
 import Legend from "../../components/common/Legend";
 
 export default function AdminHome() {
-  // 시간대별 데이터 (09:00-22:00, 1시간 단위)
+  // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
   const timeSlots = [
     { time: "09:00-10:00", status: "normal" },
     { time: "10:00-11:00", status: "normal" },
-    { time: "11:00-10:00", status: "normal" },
+    { time: "11:00-12:00", status: "normal" },
     { time: "12:00-13:00", status: "shortage" }, // 인원 부족
-    { time: "13:00 - 10:00", status: "break" }, // 브레이크
-    { time: "14:00 - 10:00", status: "empty" },
-    { time: "15:00 - 10:00", status: "normal" },
-    { time: "16:00", status: "normal" },
-    { time: "17:00", status: "normal" },
-    { time: "18:00 - 10:00", status: "normal" },
-    { time: "19:00 - 10:00", status: "normal" },
-    { time: "20:00 - 10:00", status: "normal" },
-    { time: "21:00 - 22:00", status: "normal" },
+    { time: "13:00-14:00", status: "break" }, // 브레이크
+    { time: "14:00-15:00", status: "empty" },
+    { time: "15:00-16:00", status: "normal" },
+    { time: "16:00-17:00", status: "normal" },
+    { time: "17:00-18:00", status: "normal" },
+    { time: "18:00-19:00", status: "normal" },
+    { time: "19:00-20:00", status: "normal" },
+    { time: "20:00-21:00", status: "normal" },
+    { time: "21:00-22:00", status: "normal" },
   ];
 
   // 직원 목록

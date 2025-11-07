@@ -5,6 +5,7 @@ import TimelineCard from "../../components/admin/TimelineCard";
 import StaffPanel from "../../components/admin/StaffPanel";
 import Legend from "../../components/common/Legend";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
+import ShiftChangeList from "../../components/admin/ShiftChangeList";
 
 export default function AdminHome() {
   // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
@@ -36,6 +37,15 @@ export default function AdminHome() {
     { name: "유혁상", status: "승인 완료" },
   ];
 
+  // 근무 변경 내역 (실제 승인된 변경만 기록)
+  const shiftChanges = [
+    {
+      original: "김보빈",
+      substitute: "유혁상",
+      status: "승인 완료",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header isAdmin={true} userName="관리자1" />
@@ -59,13 +69,16 @@ export default function AdminHome() {
             </div>
 
             {/* 오른쪽 패널 */}
-            <StaffPanel
-              currentStaff={2}
-              totalStaff={3}
-              timeSlot="12:00-13:00"
-              staffList={staff}
-              substitutes={substitutes}
-            />
+            <div className="space-y-6 min-h-[600px]">
+              <StaffPanel
+                currentStaff={2}
+                totalStaff={3}
+                timeSlot="12:00-13:00"
+                staffList={staff}
+                substitutes={substitutes}
+              />
+              <ShiftChangeList changes={shiftChanges} />
+            </div>
           </div>
 
           {/* 하단 범례 */}

@@ -26,7 +26,7 @@ export default function StaffPanel({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100" style={{ height: 578, minHeight: 578 }}>
       <div className="mb-6">
         <div className="text-sm text-gray-500 mb-2">근무 인원</div>
         <div className="text-center mb-4">
@@ -75,7 +75,7 @@ export default function StaffPanel({
         </div>
 
         {/* 직원 목록 */}
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto" style={{ maxHeight: 350 }}>
           {staffList
             .filter((person) => person.status === activeTab)
             .map((person, index) => (

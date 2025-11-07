@@ -1,4 +1,11 @@
-export default function TimelineCard({ startTime, endTime, totalHours, timeSlots, onSlotClick }) {
+export default function TimelineCard({
+  startTime,
+  endTime,
+  totalHours,
+  timeSlots,
+  onSlotClick,
+  selectedTime, // 선택 강조용(선택)
+}) {
   const getStatusColor = (status) => {
     switch (status) {
       case "normal":
@@ -26,26 +33,34 @@ export default function TimelineCard({ startTime, endTime, totalHours, timeSlots
 
       {/* 타임라인 */}
       <div className="space-y-2">
-        {timeSlots.map((slot, index) => (
-          <div
-            key={index}
-            className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-colors"
-            onClick={() => onSlotClick && onSlotClick(slot.time)}
-          >
+        {timeSlots.map((slot, index) => {
+          const isSelected = selectedTime && selectedTime === slot.time;
+          return (
             <div
-              className={`text-xs ${
-                slot.status === "empty" ? "text-gray-300" : "text-gray-500"
-              } w-24`}
+              key={index}
+              role="button"
+              tabIndex={0}
+              className={`flex items-center gap-3 cursor-pointer rounded-lg p-1 transition-colors
+                hover:bg-gray-50 ${isSelected ? "ring-2 ring-blue-400" : ""}`}
+              // ✅ 슬롯 "객체" 자체를 넘긴다!
+              onClick={() => onSlotClick && onSlotClick(slot)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") onSlotClick && onSlotClick(slot);
+              }}
             >
-              {slot.time}
+              <div
+                className={`text-xs ${slot.status === "empty" ? "text-gray-300" : "text-gray-500"
+                  } w-24`}
+              >
+                {slot.time}
+              </div>
+              <div
+                className={`flex-1 h-6 rounded-full ${getStatusColor(slot.status)} ${isSelected ? "outline outline-2 outline-blue-400" : ""
+                  }`}
+              />
             </div>
-            <div
-              className={`flex-1 h-6 rounded-full ${getStatusColor(
-                slot.status
-              )}`}
-            ></div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -1,10 +1,14 @@
+// 사용법:
+//  - timeSlots: [{ time: "09:00-10:00", status: "mine" | "other" }]
+//  - selectedTime: string | null
+//  - onSelect: (slot) => void
 
 export default function TimeSlotList({ timeSlots = [], selectedTime = null, onSelect }) {
     return (
         <ul className="space-y-3">
             {timeSlots.map((slot) => {
                 const isSelected = selectedTime === slot.time;
-                const isMine = slot.status === "mine";
+                const isMine = slot.status === "mine";   // ✅ 초록/회색 구분
 
                 return (
                     <li key={slot.time}>

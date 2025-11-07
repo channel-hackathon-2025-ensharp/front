@@ -1,18 +1,20 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Header from "../../components/common/Header";
-import DateCard from "../../components/admin/DateCard";
+import DateCard from "../../components/user/DateCard";
 import TimeSlotList from "../../components/user/TimeSlotList";
 import UserPanel from "../../components/user/UserPanel";
 import ChangeRequestModal from "../../components/user/ChangeRequestModal";
 import useSidePanel from "../../hooks/useSidePanel";
-import Legend from "../../components/common/Legend";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
 
+// ✅ 추가: 서비스 호출
+import { postQuitRequest } from "../../services/user/scheduleService";
+
 export default function UserHome() {
   const { selected, setDate, setSlot } = useSidePanel();
-  const currentUserName = "김보빈";
+  const currentUserName = "유혁상";
 
   const handleDateChange = (d) => setDate(d);
 
@@ -36,13 +38,21 @@ export default function UserHome() {
     []
   );
 
-  // 내 근무 시간(더미) — 실제로는 API/배정표 사용
+  // ✅ 내 근무 시간(더미)
   const myShiftTimes = useMemo(
-    () => new Set(["09:00-10:00", "10:00-11:00", "15:00-16:00"]),
+    () =>
+      new Set([
+        "09:00-10:00",
+        "10:00-11:00",
+        "11:00-12:00",
+        "12:00-13:00",
+        "13:00-14:00",
+        "14:00-15:00",
+      ]),
     []
   );
 
-  // 사용자 화면에서는 내 근무 여부만 색으로 표현: mine=초록, other=회색
+  // 사용자 화면 슬롯 색상
   const userTimeSlots = useMemo(
     () =>
       baseTimeSlots.map((t) => ({
@@ -60,15 +70,41 @@ export default function UserHome() {
   const isMyShift =
     !!(selected?.slot?.time && myShiftTimes.has(selected.slot.time));
 
-  // 모달 제어 (UserPanel의 "변경하기"로만 오픈)
+  // 모달 제어
   const [isChangeOpen, setChangeOpen] = useState(false);
   const openChange = () => setChangeOpen(true);
   const closeChange = () => setChangeOpen(false);
 
+  // (선택) 로딩 상태
+  const [submitting, setSubmitting] = useState(false);
+
   // 내 변경 내역 (더미)
   const myShiftChanges = [
-    { original: "김보빈", substitute: "서상혁", status: "근무 변경 완료" },
+    { original: "김보빈", substitute: "유혁상", status: "승인 완료" },
   ];
+
+  // ✅ 변경 신청 -> 서비스 호출
+  const handleSubmitChange = async () => {
+    if (!selected?.date || !selected?.slot?.time) {
+      alert("날짜와 시간을 먼저 선택해주세요.");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await postQuitRequest({
+        date: selected.date,
+        time: selected.slot.time,
+        userName: currentUserName,
+      });
+      alert("변경 신청이 접수되었습니다.");
+      setChangeOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("변경 신청 중 오류가 발생했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +130,7 @@ export default function UserHome() {
                   onSelect={(slot) => setSlot(slot)}
                 />
 
-                {/* 색상 범례(선택) */}
+                {/* 색상 범례 */}
                 <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <span className="inline-block h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -106,21 +142,27 @@ export default function UserHome() {
                   </div>
                 </div>
               </div>
-
-
             </div>
 
             {/* 우측: 안내 패널 + 유저 패널 + 내 변경 내역 */}
             <div className="space-y-6 min-h-[520px]">
-              {/* 내 근무시간 안내 패널 */}
+              {/* 내 근무시간 안내 */}
               <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
                 {selected?.slot?.time ? (
                   <p className="text-sm text-gray-700">
                     <span className="font-medium">{selected.slot.time}</span>
                     {isMyShift ? (
-                      <> 는 <span className="font-semibold">{currentUserName}</span>님의 <span className="text-green-600">근무시간</span>입니다.</>
+                      <>
+                        {" "}
+                        는 <span className="font-semibold">{currentUserName}</span>
+                        님의 <span className="text-green-600">근무시간</span>입니다.
+                      </>
                     ) : (
-                      <> 는 <span className="font-semibold">{currentUserName}</span>님의 근무시간이 <span className="text-gray-600">아닙니다.</span></>
+                      <>
+                        {" "}
+                        는 <span className="font-semibold">{currentUserName}</span>
+                        님의 근무시간이 <span className="text-gray-600">아닙니다.</span>
+                      </>
                     )}
                   </p>
                 ) : (
@@ -136,7 +178,7 @@ export default function UserHome() {
                 staffList={staffList}
                 currentUserName={currentUserName}
                 isMyShift={isMyShift}
-                onClickChange={() => openChange()}
+                onClickChange={openChange}
               />
 
               {/* 내 변경 내역 */}
@@ -164,11 +206,12 @@ export default function UserHome() {
       {/* 변경 신청 모달 */}
       <ChangeRequestModal
         isOpen={isChangeOpen}
-        onClose={closeChange}
+        onClose={() => !submitting && setChangeOpen(false)}
         date={selected?.date || new Date()}
         timeSlot={selected?.slot?.time || ""}
         jobType={selected?.slot?.status === "shortage" ? "신규 상담" : "기존 상담"}
-        onSubmit={() => console.log("변경 신청 완료:", selected)}
+        onSubmit={handleSubmitChange}
+        submitting={submitting}
       />
     </div>
   );

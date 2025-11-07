@@ -1,15 +1,9 @@
-// 간단 버전: 이름과 "변경하기" 버튼만 있는 리스트
-// props:
-// - currentStaff, totalStaff, timeSlot
-// - staffList: [{ name, type, status }]
-// - changeLabel: 버튼 라벨 (기본: '변경하기')
-// - onClickChange: (person) => void
-export default function StaffPanel({
+// src/components/user/UserPanel.js
+export default function UserPanel({
     currentStaff = 0,
     totalStaff = 0,
     timeSlot = "-",
     staffList = [],
-    changeLabel = "변경하기",
     onClickChange,
 }) {
     return (
@@ -28,17 +22,16 @@ export default function StaffPanel({
 
             <div className="divide-y">
                 {staffList.map((person, idx) => (
-                    <div key={idx} className="flex items-center justify-between py-4">
-                        <div className="text-base font-semibold text-gray-900">
+                    <div key={idx} className="flex items-center justify-between py-5">
+                        <div className="text-lg font-semibold text-gray-900">
                             {person.name}
                         </div>
-
                         <button
                             type="button"
-                            className="text-gray-500 hover:text-gray-700 underline underline-offset-2"
+                            className="text-gray-500 hover:text-gray-700 underline underline-offset-4"
                             onClick={() => onClickChange?.(person)}
                         >
-                            {person.changeLabel ?? changeLabel}
+                            변경하기
                         </button>
                     </div>
                 ))}

@@ -9,7 +9,7 @@ export default function StaffPanel({
   staffList,
   substitutes,
 }) {
-  const [activeTab, setActiveTab] = useState("confirmed");
+  const [activeTab, setActiveTab] = useState("available");
   const { isOpen: isModalOpen, open: openModal, close: closeModal, data: selectedStaff } = useModal();
 
 

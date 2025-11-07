@@ -61,7 +61,15 @@ export default function CalendarModal({ isOpen, onClose, selectedDate, onDateSel
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl p-8 shadow-2xl z-50 w-[450px]">
+        <Dialog.Content
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl p-8 shadow-2xl z-50 w-[450px]"
+          aria-describedby="calendar-description"
+        >
+          <Dialog.Title className="sr-only">날짜 선택</Dialog.Title>
+          <Dialog.Description id="calendar-description" className="sr-only">
+            날짜를 선택하세요
+          </Dialog.Description>
+
           {/* 닫기 버튼 */}
           <Dialog.Close className="absolute top-4 right-4 text-gray-300 hover:text-gray-500">
             <XMarkIcon className="w-6 h-6" />

@@ -46,14 +46,7 @@ export default function AdminHome() {
     ? getStaffCountForSelectedTime()
     : staffCount;
 
-  // 근무 변경 내역 (TODO: API 연동 필요)
-  const shiftChanges = [
-    {
-      original: "김보빈",
-      substitute: "유혁상",
-      status: "승인 완료",
-    },
-  ];
+  // ...더미 데이터 삭제됨...
 
   // 날짜 변경 핸들러
   const handleDateChange = (newDate) => {
@@ -116,7 +109,7 @@ export default function AdminHome() {
                 staffList={staffList}
                 substitutes={substitutes}
               />
-              <ShiftChangeList changes={shiftChanges} />
+              <ShiftChangeList changes={[]} />
             </div>
           </div>
 

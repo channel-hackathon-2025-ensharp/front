@@ -45,7 +45,6 @@ export async function fetchSchedules(date) {
  */
 export function groupSchedulesByTime(schedules) {
   const grouped = {};
-
   schedules.forEach((schedule) => {
     const { hour, minute } = schedule.time;
     const timeKey = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -56,7 +55,6 @@ export function groupSchedulesByTime(schedules) {
 
     grouped[timeKey].push(schedule);
   });
-
   return grouped;
 }
 
@@ -107,7 +105,7 @@ export function transformToTimeSlots(schedules, requiredStaffPerSlot = 3) {
  * @returns {Array} staff 배열 (confirmed, available, unavailable)
  */
 export function transformToStaffList(schedules) {
-  const staffList = [];
+  // ...더미 데이터 삭제됨...
 
   schedules.forEach((schedule) => {
     const hasReplacements = schedule.replacements && schedule.replacements.length > 0;
@@ -128,13 +126,14 @@ export function transformToStaffList(schedules) {
       status = 'unavailable'; // 기본값
     }
 
+    // admins 필드 사용
     staffList.push({
-      name: schedule.user.name,
+      name: schedule.admins.name,
       type: hasReplacements ? 'new' : 'original',
       status,
-      userId: schedule.user.id,
-      email: schedule.user.email,
-      role: schedule.user.role,
+      userId: schedule.admins.id,
+      email: schedule.admins.email,
+      role: schedule.admins.role,
       scheduleId: schedule.id,
       quitStatus: schedule.quitStatus,
     });
@@ -149,16 +148,16 @@ export function transformToStaffList(schedules) {
  * @returns {Array} substitutes 배열
  */
 export function transformToSubstitutes(schedules) {
-  const substitutes = [];
+  // ...더미 데이터 삭제됨...
 
   schedules.forEach((schedule) => {
     if (schedule.replacements && schedule.replacements.length > 0) {
       schedule.replacements.forEach((replacement) => {
         substitutes.push({
-          name: replacement.user.name,
+          name: replacement.admins.name,
           status: replacement.permitted ? 'approved' : 'pending',
-          userId: replacement.user.id,
-          email: replacement.user.email,
+          userId: replacement.admins.id,
+          email: replacement.admins.email,
           replacementId: replacement.id,
           originalScheduleId: schedule.id,
         });

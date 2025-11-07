@@ -8,6 +8,8 @@ import channeltalkLogo from "../../assets/logo/channeltalk.png";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
 import FloatingChannelTalkButton from "../../components/common/FloatingChannelTalkButton";
 import useSidePanel from "../../hooks/useSidePanel";
+import { format } from "date-fns";
+import { ko } from "date-fns";
 
 export default function AdminHome() {
   const { selected, setSlot } = useSidePanel();
@@ -49,6 +51,11 @@ export default function AdminHome() {
     },
   ];
 
+  // 오늘 날짜 및 요일 자동 생성
+  const today = new Date();
+  const dateStr = format(today, "yyyy.MM.dd.");
+  const dayOfWeek = format(today, "eee", { locale: ko });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header isAdmin={true} userName="관리자1" />
@@ -59,8 +66,8 @@ export default function AdminHome() {
             {/* 왼쪽 패널 */}
             <div className="space-y-6">
               <DateCard
-                date="2025.11.08."
-                dayOfWeek="토"
+                date={dateStr}
+                dayOfWeek={dayOfWeek}
                 isBusinessDay={true}
               />
               <TimelineCard

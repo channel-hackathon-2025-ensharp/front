@@ -26,7 +26,7 @@ export default function StaffPanel({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100" style={{ height: 578, minHeight: 578 }}>
+    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100" style={{ height: 680, minHeight: 680 }}>
       <div className="mb-6">
         <div className="text-sm text-gray-500 mb-2">근무 인원</div>
         <div className="text-center mb-4">

@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Header from "../../components/common/Header";
@@ -8,30 +7,49 @@ import UserPanel from "../../components/user/UserPanel";
 import ChangeRequestModal from "../../components/user/ChangeRequestModal";
 import useSidePanel from "../../hooks/useSidePanel";
 import Legend from "../../components/common/Legend";
+import ShiftChangeList from "../../components/admin/ShiftChangeList";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
 
 export default function UserHome() {
   const { selected, setDate, setSlot } = useSidePanel();
+  const currentUserName = "김보빈";
 
   const handleDateChange = (d) => setDate(d);
 
-  const timeSlots = useMemo(
+  // 전체 타임 슬롯 (기본 템플릿)
+  const baseTimeSlots = useMemo(
     () => [
-      { time: "09:00-10:00", status: "normal" },
-      { time: "10:00-11:00", status: "normal" },
-      { time: "11:00-12:00", status: "normal" },
-      { time: "12:00-13:00", status: "shortage" },
-      { time: "13:00-14:00", status: "break" },
-      { time: "14:00-15:00", status: "empty" },
-      { time: "15:00-16:00", status: "normal" },
-      { time: "16:00-17:00", status: "normal" },
-      { time: "17:00-18:00", status: "normal" },
-      { time: "18:00-19:00", status: "normal" },
-      { time: "19:00-20:00", status: "normal" },
-      { time: "20:00-21:00", status: "normal" },
-      { time: "21:00-22:00", status: "normal" },
+      "09:00-10:00",
+      "10:00-11:00",
+      "11:00-12:00",
+      "12:00-13:00",
+      "13:00-14:00",
+      "14:00-15:00",
+      "15:00-16:00",
+      "16:00-17:00",
+      "17:00-18:00",
+      "18:00-19:00",
+      "19:00-20:00",
+      "20:00-21:00",
+      "21:00-22:00",
     ],
     []
+  );
+
+  // 내 근무 시간(더미) — 실제로는 API/배정표 사용
+  const myShiftTimes = useMemo(
+    () => new Set(["09:00-10:00", "10:00-11:00", "15:00-16:00"]),
+    []
+  );
+
+  // 사용자 화면에서는 내 근무 여부만 색으로 표현: mine=초록, other=회색
+  const userTimeSlots = useMemo(
+    () =>
+      baseTimeSlots.map((t) => ({
+        time: t,
+        status: myShiftTimes.has(t) ? "mine" : "other",
+      })),
+    [baseTimeSlots, myShiftTimes]
   );
 
   const staffList = [
@@ -39,56 +57,95 @@ export default function UserHome() {
     { name: "유혁상", type: "exist", status: "confirmed" },
   ];
 
-  // 모달 제어(우측 패널의 “변경하기”로만 오픈)
+  const isMyShift =
+    !!(selected?.slot?.time && myShiftTimes.has(selected.slot.time));
+
+  // 모달 제어 (UserPanel의 "변경하기"로만 오픈)
   const [isChangeOpen, setChangeOpen] = useState(false);
   const openChange = () => setChangeOpen(true);
   const closeChange = () => setChangeOpen(false);
 
+  // 내 변경 내역 (더미)
+  const myShiftChanges = [
+    { original: "김보빈", substitute: "서상혁", status: "근무 변경 완료" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 헤더: 관리자 페이지와 동일 컴포넌트 사용 */}
-      <Header isAdmin={false} userName="사용자A" />
+      <Header isAdmin={false} userName={currentUserName} />
 
       <div className="p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[380px_1fr]">
             {/* 좌측: 날짜 + 타임슬롯 */}
             <div className="space-y-6">
               <DateCard onDateChange={handleDateChange} />
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                <div className="text-sm text-gray-500 mb-2">근무 시간</div>
-                <div className="flex items-center justify-between mb-6">
+
+              <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="mb-2 text-sm text-gray-500">근무 시간</div>
+                <div className="mb-6 flex items-center justify-between">
                   <div className="text-gray-600">09:00-22:00</div>
                   <div className="text-3xl font-bold text-blue-600">6시간</div>
                 </div>
+
                 <TimeSlotList
-                  timeSlots={timeSlots}
+                  timeSlots={userTimeSlots}
                   selectedTime={selected?.slot?.time || null}
-                  onSelect={(slot) => {
-                    // 슬롯 클릭 시 선택만 (모달 X)
-                    setSlot(slot);
-                  }}
+                  onSelect={(slot) => setSlot(slot)}
                 />
+
+                {/* 색상 범례(선택) */}
+                <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full bg-green-500" />
+                    내 근무
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />
+                    내 근무 아님
+                  </div>
+                </div>
               </div>
 
-              {/* 하단 범례 */}
-              <Legend />
+
             </div>
 
-            {/* 우측: 유저 패널 — 여기 “변경하기” 클릭 시 모달 오픈 */}
-            <div className="min-h-[520px]">
+            {/* 우측: 안내 패널 + 유저 패널 + 내 변경 내역 */}
+            <div className="space-y-6 min-h-[520px]">
+              {/* 내 근무시간 안내 패널 */}
+              <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                {selected?.slot?.time ? (
+                  <p className="text-sm text-gray-700">
+                    <span className="font-medium">{selected.slot.time}</span>
+                    {isMyShift ? (
+                      <> 는 <span className="font-semibold">{currentUserName}</span>님의 <span className="text-green-600">근무시간</span>입니다.</>
+                    ) : (
+                      <> 는 <span className="font-semibold">{currentUserName}</span>님의 근무시간이 <span className="text-gray-600">아닙니다.</span></>
+                    )}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-500">좌측에서 시간을 선택하세요.</p>
+                )}
+              </div>
+
+              {/* 유저 패널 */}
               <UserPanel
                 currentStaff={2}
                 totalStaff={3}
                 timeSlot={selected?.slot?.time || "-"}
                 staffList={staffList}
+                currentUserName={currentUserName}
+                isMyShift={isMyShift}
                 onClickChange={() => openChange()}
               />
+
+              {/* 내 변경 내역 */}
+              <ShiftChangeList title="근무 변경 내역" changes={myShiftChanges} />
             </div>
           </div>
         </div>
 
-        {/* 플로팅 채널톡 버튼 (관리자 페이지와 동일) */}
+        {/* 플로팅 채널톡 버튼 */}
         <button
           className="fixed bottom-8 right-8 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-2xl ring-1 ring-black/10 transition-transform hover:scale-105"
           aria-label="채널톡 열기"
@@ -110,13 +167,8 @@ export default function UserHome() {
         onClose={closeChange}
         date={selected?.date || new Date()}
         timeSlot={selected?.slot?.time || ""}
-        jobType={
-          selected?.slot?.status === "shortage" ? "신규 상담" : "기존 상담"
-        }
-        onSubmit={() => {
-          // TODO: 실제 신청 API 연결
-          console.log("변경 신청 완료:", selected);
-        }}
+        jobType={selected?.slot?.status === "shortage" ? "신규 상담" : "기존 상담"}
+        onSubmit={() => console.log("변경 신청 완료:", selected)}
       />
     </div>
   );

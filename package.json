@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/channel-hackathon-2025-ensharp/front#readme",
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "date-fns": "^4.1.0",

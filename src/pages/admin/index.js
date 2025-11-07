@@ -4,7 +4,7 @@ import DateCard from "../../components/admin/DateCard";
 import TimelineCard from "../../components/admin/TimelineCard";
 import StaffPanel from "../../components/admin/StaffPanel";
 import Legend from "../../components/common/Legend";
-import channeltalkLogo from "../../assets/logo/channeltalk.png"
+import channeltalkLogo from "../../assets/logo/channeltalk.png";
 
 export default function AdminHome() {
   // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
@@ -28,6 +28,12 @@ export default function AdminHome() {
   const staff = [
     { name: "김보빈", type: "new", status: "confirmed" }, // 신규 상담
     { name: "유혁상", type: "existing", status: "confirmed" }, // 기존 상담
+  ];
+
+  // 근무 변경 후보자 리스트 (모달에서 사용)
+  const substitutes = [
+    { name: "서상혁", status: "승인 대기" },
+    { name: "유혁상", status: "승인 완료" },
   ];
 
   return (
@@ -58,6 +64,7 @@ export default function AdminHome() {
               totalStaff={3}
               timeSlot="12:00-13:00"
               staffList={staff}
+              substitutes={substitutes}
             />
           </div>
 

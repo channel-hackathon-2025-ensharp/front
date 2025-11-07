@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ConfirmModal from "../common/ConfirmModal";
+import ShiftChangeModal from "./ShiftChangeModal";
 import useModal from "../../hooks/useModal";
 
 export default function StaffPanel({
@@ -7,17 +7,22 @@ export default function StaffPanel({
   totalStaff,
   timeSlot,
   staffList,
+  substitutes,
 }) {
   const [activeTab, setActiveTab] = useState("confirmed");
   const { isOpen: isModalOpen, open: openModal, close: closeModal, data: selectedStaff } = useModal();
+
+
+  // candidates를 props로 전달받은 substitutes로 대체
+  const candidates = substitutes || [];
 
   const handleChangeClick = (person) => {
     openModal(person);
   };
 
-  const handleConfirm = () => {
-    console.log("직원 제외 확인:", selectedStaff);
-    // 여기에 실제 제외 로직 추가
+  const handleApprove = (person) => {
+    alert(`${person.name}님이 대체 근무자로 승인되었습니다.`);
+    closeModal();
   };
 
   return (
@@ -92,36 +97,34 @@ export default function StaffPanel({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-medium">{person.name}</span>
-                  <button
-                    onClick={() => handleChangeClick(person)}
-                    className="text-sm text-gray-400 hover:text-gray-600 underline"
-                  >
-                    변경하기
-                  </button>
+                  {person.type === "new" ? (
+                    <button
+                      onClick={() => handleChangeClick(person)}
+                      className="text-sm text-gray-400 hover:text-gray-600 underline"
+                    >
+                      변경하기
+                    </button>
+                  ) : (
+                    <button
+                      className="text-sm text-gray-300 cursor-not-allowed underline"
+                      disabled
+                    >
+                      변경불가
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
         </div>
       </div>
 
-      {/* ConfirmModal */}
+      {/* ShiftChangeModal: 근무 변경 후보 리스트와 승인 버튼 */}
       {selectedStaff && (
-        <ConfirmModal
+        <ShiftChangeModal
           isOpen={isModalOpen}
+          candidates={candidates}
+          onApprove={handleApprove}
           onClose={closeModal}
-          onConfirm={handleConfirm}
-          title={`${selectedStaff.name} 직원을\n다음 근무 일정에서 제외합니다.`}
-          content={[
-            {
-              label: "일시",
-              value: `2025.11.08. (토)\n${timeSlot}`,
-            },
-            {
-              label: "직무",
-              value: selectedStaff.type === "new" ? "신규 상담" : "기존 상담",
-            },
-          ]}
-          footer="확인 시 해당 직원에게 알림이 발송됩니다."
         />
       )}
     </div>

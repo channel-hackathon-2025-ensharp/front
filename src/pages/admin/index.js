@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Header from "../../components/common/Header";
 import Image from "next/image";
 import DateCard from "../../components/admin/DateCard";
@@ -18,10 +19,10 @@ export default function AdminHome() {
     { time: "09:00-10:00", status: "normal" },
     { time: "10:00-11:00", status: "normal" },
     { time: "11:00-12:00", status: "normal" },
-    { time: "12:00-13:00", status: "shortage" }, // 인원 부족
-    { time: "13:00-14:00", status: "break" }, // 브레이크
-    { time: "14:00-15:00", status: "empty" },
-    { time: "15:00-16:00", status: "normal" },
+    { time: "12:00-13:00", status: "normal" }, // 인원 부족
+    { time: "13:00-14:00", status: "normal" }, // 브레이크
+    { time: "14:00-15:00", status: "normal" },
+    { time: "15:00-16:00", status: "empty" },
     { time: "16:00-17:00", status: "normal" },
     { time: "17:00-18:00", status: "normal" },
     { time: "18:00-19:00", status: "normal" },
@@ -39,17 +40,23 @@ export default function AdminHome() {
   // 근무 변경 후보자 리스트 (모달에서 사용)
   const substitutes = [
     { name: "서상혁", status: "승인 대기" },
-    { name: "유혁상", status: "승인 완료" },
+    { name: "박준서", status: "승인 완료" },
   ];
 
-  // 근무 변경 내역 (실제 승인된 변경만 기록)
-  const shiftChanges = [
-    {
-      original: "김보빈",
-      substitute: "유혁상",
-      status: "승인 완료",
-    },
-  ];
+  // 근무 변경 내역 (처음에는 비어 있음, 승인 시 추가)
+  const [shiftChanges, setShiftChanges] = useState([]);
+
+  // 근무 변경 승인 핸들러
+  const handleApprove = (person) => {
+    setShiftChanges((prev) => [
+      ...prev,
+      {
+        original: "김보빈",
+        substitute: person.name,
+        status: "승인 완료",
+      },
+    ]);
+  };
 
   // 오늘 날짜 및 요일 자동 생성
   const today = new Date();
@@ -87,6 +94,7 @@ export default function AdminHome() {
                 timeSlot={selected.slot || "12:00-13:00"}
                 staffList={staff}
                 substitutes={substitutes}
+                onApprove={handleApprove}
               />
               <ShiftChangeList changes={shiftChanges} />
             </div>

@@ -8,8 +8,8 @@ export default function ShiftChangeList() {
     setChanges((prev) => [
       ...prev,
       {
-        original: "김보빈",
-        substitute: "서상혁",
+        original: "유혁상",
+        substitute: "김보빈",
         status: "승인 완료",
       },
     ]);

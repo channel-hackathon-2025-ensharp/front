@@ -33,13 +33,13 @@ export default function AdminHome() {
 
   // 직원 목록
   const staff = [
-    { name: "김보빈", type: "new", status: "confirmed" }, // 신규 상담
-    { name: "유혁상", type: "existing", status: "confirmed" }, // 기존 상담
+    { name: "유혁상", type: "new", status: "confirmed" }, // 신규 상담
+    { name: "서상혁", type: "existing", status: "confirmed" }, // 기존 상담
   ];
 
   // 근무 변경 후보자 리스트 (모달에서 사용)
   const substitutes = [
-    { name: "서상혁", status: "승인 대기" },
+    { name: "김보빈", status: "승인 대기" },
     { name: "박준서", status: "승인 완료" },
   ];
 

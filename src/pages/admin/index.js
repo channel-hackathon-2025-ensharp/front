@@ -1,8 +1,10 @@
 import Header from "../../components/common/Header";
+import Image from "next/image";
 import DateCard from "../../components/admin/DateCard";
 import TimelineCard from "../../components/admin/TimelineCard";
 import StaffPanel from "../../components/admin/StaffPanel";
 import Legend from "../../components/common/Legend";
+import channeltalkLogo from "../../assets/logo/channeltalk.png"
 
 export default function AdminHome() {
   // 시간대별 데이터 (09:00-22:00, 1시간 단위)
@@ -64,14 +66,19 @@ export default function AdminHome() {
         </div>
 
         {/* 플로팅 채널톡 버튼 */}
-        <button className="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 rounded-full shadow-2xl flex items-center justify-center hover:bg-indigo-700 transition-colors">
-          <svg
-            className="w-8 h-8 text-white"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 3 .97 4.29L2 22l5.71-.97C9 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.38 0-2.69-.28-3.88-.78l-.28-.15-2.91.49.49-2.91-.15-.28C4.78 14.69 4.5 13.38 4.5 12c0-4.14 3.36-7.5 7.5-7.5s7.5 3.36 7.5 7.5-3.36 7.5-7.5 7.5z" />
-          </svg>
+
+        <button
+          className="fixed bottom-8 right-8 w-16 h-16 rounded-full shadow-2xl ring-1 ring-black/10 bg-white flex items-center justify-center hover:scale-105 transition-transform z-50"
+          aria-label="채널톡 열기"
+        >
+          <Image
+            src={channeltalkLogo}
+            alt="채널톡 로고"
+            width={28}
+            height={28}
+            className="object-contain"
+            priority
+          />
         </button>
       </div>
     </div>

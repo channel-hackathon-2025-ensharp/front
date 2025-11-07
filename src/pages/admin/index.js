@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Header from "../../components/common/Header";
 import Image from "next/image";
 import DateCard from "../../components/admin/DateCard";
@@ -7,42 +8,45 @@ import Legend from "../../components/common/Legend";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
 import FloatingChannelTalkButton from "../../components/common/FloatingChannelTalkButton";
-import useSidePanel from "../../hooks/useSidePanel";
+import useScheduleStore from "../../store/scheduleStore";
 import { format } from "date-fns";
 import { ko } from "date-fns";
 
 export default function AdminHome() {
-  const { selected, setSlot } = useSidePanel();
-  // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
-  const timeSlots = [
-    { time: "09:00-10:00", status: "normal" },
-    { time: "10:00-11:00", status: "normal" },
-    { time: "11:00-12:00", status: "normal" },
-    { time: "12:00-13:00", status: "shortage" }, // 인원 부족
-    { time: "13:00-14:00", status: "break" }, // 브레이크
-    { time: "14:00-15:00", status: "empty" },
-    { time: "15:00-16:00", status: "normal" },
-    { time: "16:00-17:00", status: "normal" },
-    { time: "17:00-18:00", status: "normal" },
-    { time: "18:00-19:00", status: "normal" },
-    { time: "19:00-20:00", status: "normal" },
-    { time: "20:00-21:00", status: "normal" },
-    { time: "21:00-22:00", status: "normal" },
-  ];
+  // Zustand 스토어 사용
+  const {
+    selectedDate,
+    timeSlots,
+    workingHours,
+    staffCount,
+    selectedTimeSlot,
+    isLoading,
+    error,
+    setSelectedDate,
+    setSelectedTimeSlot,
+    loadSchedules,
+    getStaffListForSelectedTime,
+    getSubstitutesForSelectedTime,
+    getStaffCountForSelectedTime,
+  } = useScheduleStore();
 
-  // 직원 목록
-  const staff = [
-    { name: "김보빈", type: "new", status: "confirmed" }, // 신규 상담
-    { name: "유혁상", type: "existing", status: "confirmed" }, // 기존 상담
-  ];
+  // 컴포넌트 마운트 시 오늘 날짜의 스케줄 로드
+  useEffect(() => {
+    loadSchedules(selectedDate);
+  }, []);
 
-  // 근무 변경 후보자 리스트 (모달에서 사용)
-  const substitutes = [
-    { name: "서상혁", status: "승인 대기" },
-    { name: "유혁상", status: "승인 완료" },
-  ];
+  // 날짜 포맷팅
+  const dateStr = format(selectedDate, "yyyy.MM.dd.");
+  const dayOfWeek = format(selectedDate, "eee", { locale: ko });
 
-  // 근무 변경 내역 (실제 승인된 변경만 기록)
+  // 선택된 시간대의 데이터
+  const staffList = getStaffListForSelectedTime();
+  const substitutes = getSubstitutesForSelectedTime();
+  const timeSlotStaffCount = selectedTimeSlot
+    ? getStaffCountForSelectedTime()
+    : staffCount;
+
+  // 근무 변경 내역 (TODO: API 연동 필요)
   const shiftChanges = [
     {
       original: "김보빈",
@@ -51,14 +55,37 @@ export default function AdminHome() {
     },
   ];
 
-  // 오늘 날짜 및 요일 자동 생성
-  const today = new Date();
-  const dateStr = format(today, "yyyy.MM.dd.");
-  const dayOfWeek = format(today, "eee", { locale: ko });
+  // 날짜 변경 핸들러
+  const handleDateChange = (newDate) => {
+    setSelectedDate(newDate);
+  };
+
+  // 시간대 클릭 핸들러
+  const handleSlotClick = (time) => {
+    setSelectedTimeSlot(time);
+  };
+
+  // 로딩 상태 표시
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">로딩 중...</div>
+      </div>
+    );
+  }
+
+  // 에러 상태 표시
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-600">에러 발생: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isAdmin={true} userName="관리자1" />
+      <Header isAdmin={true} userName="관리자" />
       <div className="p-8">
         <div className="max-w-7xl mx-auto">
           {/* 메인 컨텐츠 영역 */}
@@ -69,23 +96,24 @@ export default function AdminHome() {
                 date={dateStr}
                 dayOfWeek={dayOfWeek}
                 isBusinessDay={true}
+                onDateChange={handleDateChange}
               />
               <TimelineCard
-                startTime="09:00"
-                endTime="22:00"
-                totalHours={12}
+                startTime={workingHours.startTime}
+                endTime={workingHours.endTime}
+                totalHours={workingHours.totalHours}
                 timeSlots={timeSlots}
-                onSlotClick={setSlot}
+                onSlotClick={handleSlotClick}
               />
             </div>
 
             {/* 오른쪽 패널 */}
             <div className="space-y-6 min-h-[600px]">
               <StaffPanel
-                currentStaff={2}
-                totalStaff={3}
-                timeSlot={selected.slot || "12:00-13:00"}
-                staffList={staff}
+                currentStaff={timeSlotStaffCount.currentStaff}
+                totalStaff={timeSlotStaffCount.totalStaff}
+                timeSlot={selectedTimeSlot || "시간대를 선택하세요"}
+                staffList={staffList}
                 substitutes={substitutes}
               />
               <ShiftChangeList changes={shiftChanges} />

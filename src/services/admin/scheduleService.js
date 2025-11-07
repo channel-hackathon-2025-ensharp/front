@@ -1,5 +1,3 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 /**
  * GET /schedules API 호출
  * @param {string} date - 조회할 날짜 (YYYY-MM-DD 형식)
@@ -7,23 +5,35 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
  */
 export async function fetchSchedules(date) {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/schedules?date=${date}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // Next.js rewrites: /api/schedules -> http://ngrok-url/schedules
+    const url = `/api/schedules?date=${date}`;
+    console.log('API 요청 URL:', url);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true', // ngrok 경고 페이지 건너뛰기
+      },
+    });
+
+    console.log('API 응답 상태:', response.status);
 
     if (!response.ok) {
-      throw new Error(`API 요청 실패: ${response.status}`);
+      const errorText = await response.text();
+      console.error('API 에러 응답:', errorText);
+      throw new Error(`API 요청 실패: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('API 응답 데이터:', data);
     return data;
   } catch (error) {
     console.error('스케줄 조회 실패:', error);
+    console.error('에러 상세:', {
+      message: error.message,
+      stack: error.stack,
+    });
     throw error;
   }
 }
@@ -65,6 +75,7 @@ export function transformToTimeSlots(schedules, requiredStaffPerSlot = 3) {
 
   allTimes.forEach((time) => {
     const scheduleGroup = grouped[time];
+    // ACTIVE 상태만 근무 가능한 인원으로 카운트
     const activeSchedules = scheduleGroup.filter(
       (s) => s.quitStatus === 'ACTIVE'
     );
@@ -100,15 +111,21 @@ export function transformToStaffList(schedules) {
 
   schedules.forEach((schedule) => {
     const hasReplacements = schedule.replacements && schedule.replacements.length > 0;
-    const isActive = schedule.quitStatus === 'ACTIVE';
+    const quitStatus = schedule.quitStatus; // ACTIVE, PENDING, INACTIVE
 
+    // 상태 매핑
+    // ACTIVE: 확정 근무
+    // PENDING: 승인 대기 중 (가능)
+    // INACTIVE: 근무 불가
     let status;
-    if (isActive) {
+    if (quitStatus === 'ACTIVE') {
       status = 'confirmed';
-    } else if (hasReplacements) {
+    } else if (quitStatus === 'PENDING') {
       status = 'available';
-    } else {
+    } else if (quitStatus === 'INACTIVE') {
       status = 'unavailable';
+    } else {
+      status = 'unavailable'; // 기본값
     }
 
     staffList.push({
@@ -119,6 +136,7 @@ export function transformToStaffList(schedules) {
       email: schedule.user.email,
       role: schedule.user.role,
       scheduleId: schedule.id,
+      quitStatus: schedule.quitStatus,
     });
   });
 

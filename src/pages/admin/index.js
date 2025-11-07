@@ -6,6 +6,7 @@ import StaffPanel from "../../components/admin/StaffPanel";
 import Legend from "../../components/common/Legend";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
+import FloatingChannelTalkButton from "../../components/common/FloatingChannelTalkButton";
 
 export default function AdminHome() {
   // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
@@ -86,19 +87,7 @@ export default function AdminHome() {
         </div>
 
         {/* 플로팅 채널톡 버튼 */}
-
-        <button
-          className="fixed bottom-8 right-8 w-16 h-16 rounded-full overflow-hidden shadow-2xl bg-white flex items-center justify-center hover:scale-105 transition-transform z-50"
-          aria-label="채널톡 열기"
-        >
-          <Image
-            src={channeltalkLogo}
-            alt="채널톡 로고"
-            fill
-            className="object-cover w-full h-full"
-            priority
-          />
-        </button>
+        <FloatingChannelTalkButton />
       </div>
     </div>
   );

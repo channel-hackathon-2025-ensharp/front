@@ -8,7 +8,7 @@ import UserPanel from "../../components/user/UserPanel";
 import ChangeRequestModal from "../../components/user/ChangeRequestModal";
 import useSidePanel from "../../hooks/useSidePanel";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
-import channeltalkLogo from "../../assets/logo/channeltalk.png";
+import FloatingChannelTalkButton from "../../components/common/FloatingChannelTalkButton";
 
 import { postQuitRequest } from "../../services/user/scheduleService";
 import { isApproved, listApprovals, formatYMD } from "../../services/user/approvalStorage";
@@ -183,12 +183,7 @@ export default function UserHome() {
           </div>
         </div>
 
-        <button
-          className="fixed bottom-8 right-8 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-2xl ring-1 ring-black/10 transition-transform hover:scale-105"
-          aria-label="채널톡 열기"
-        >
-          <Image src={channeltalkLogo} alt="채널톡 로고" width={28} height={28} className="object-contain" priority />
-        </button>
+        <FloatingChannelTalkButton />
       </div>
 
       <ChangeRequestModal

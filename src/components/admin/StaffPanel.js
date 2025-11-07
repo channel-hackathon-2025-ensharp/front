@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ConfirmModal from "../common/ConfirmModal";
+import useModal from "../../hooks/useModal";
 
 export default function StaffPanel({
   currentStaff,
@@ -8,12 +9,10 @@ export default function StaffPanel({
   staffList,
 }) {
   const [activeTab, setActiveTab] = useState("confirmed");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStaff, setSelectedStaff] = useState(null);
+  const { isOpen: isModalOpen, open: openModal, close: closeModal, data: selectedStaff } = useModal();
 
   const handleChangeClick = (person) => {
-    setSelectedStaff(person);
-    setIsModalOpen(true);
+    openModal(person);
   };
 
   const handleConfirm = () => {
@@ -109,7 +108,7 @@ export default function StaffPanel({
       {selectedStaff && (
         <ConfirmModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={closeModal}
           onConfirm={handleConfirm}
           title={`${selectedStaff.name} 직원을\n다음 근무 일정에서 제외합니다.`}
           content={[

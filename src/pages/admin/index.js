@@ -7,8 +7,10 @@ import Legend from "../../components/common/Legend";
 import channeltalkLogo from "../../assets/logo/channeltalk.png";
 import ShiftChangeList from "../../components/admin/ShiftChangeList";
 import FloatingChannelTalkButton from "../../components/common/FloatingChannelTalkButton";
+import useSidePanel from "../../hooks/useSidePanel";
 
 export default function AdminHome() {
+  const { selected, setSlot } = useSidePanel();
   // 시간대별 데이터 (09:00-22:00, 1시간 단위, 올바른 형식)
   const timeSlots = [
     { time: "09:00-10:00", status: "normal" },
@@ -66,6 +68,7 @@ export default function AdminHome() {
                 endTime="22:00"
                 totalHours={12}
                 timeSlots={timeSlots}
+                onSlotClick={setSlot}
               />
             </div>
 
@@ -74,7 +77,7 @@ export default function AdminHome() {
               <StaffPanel
                 currentStaff={2}
                 totalStaff={3}
-                timeSlot="12:00-13:00"
+                timeSlot={selected.slot || "12:00-13:00"}
                 staffList={staff}
                 substitutes={substitutes}
               />

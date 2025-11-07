@@ -1,4 +1,4 @@
-export default function TimelineCard({ startTime, endTime, totalHours, timeSlots }) {
+export default function TimelineCard({ startTime, endTime, totalHours, timeSlots, onSlotClick }) {
   const getStatusColor = (status) => {
     switch (status) {
       case "normal":
@@ -27,7 +27,11 @@ export default function TimelineCard({ startTime, endTime, totalHours, timeSlots
       {/* 타임라인 */}
       <div className="space-y-2">
         {timeSlots.map((slot, index) => (
-          <div key={index} className="flex items-center gap-3">
+          <div
+            key={index}
+            className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-colors"
+            onClick={() => onSlotClick && onSlotClick(slot.time)}
+          >
             <div
               className={`text-xs ${
                 slot.status === "empty" ? "text-gray-300" : "text-gray-500"
